@@ -1,4 +1,11 @@
 package com.dayaeyak.waiting.domain.dto.response;
 
-public class WaitingListResponseDto {
+import java.util.List;
+
+public record WaitingListResponseDto(
+        long count,
+        List<WaitingResponseDto> data
+) {
+
+
 }
