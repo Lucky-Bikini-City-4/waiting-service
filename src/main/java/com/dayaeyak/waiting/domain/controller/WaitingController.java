@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 @RestController
@@ -32,57 +33,56 @@ public class WaitingController {
         return ApiResponse.success(201, "웨이팅이 등록되었습니다.", responseDto);
     }
 
+
     // 웨이팅 단건 조회
     @GetMapping("/{waitingId}")
     public ResponseEntity<ApiResponse<WaitingResponseDto>> getWaiting(
             @Validated
-            @PathVariable Long waitingId,
-            @RequestBody WaitingRequestDto requestDto){
-        WaitingResponseDto responseDto = waitingService.getWaiting(requestDto);
-        return ApiResponse.success(200, "", responseDto);
+            @PathVariable BigInteger waitingId){
+        WaitingResponseDto responseDto = waitingService.getWaiting(waitingId);
+        return ApiResponse.success(200, "웨이팅 단건이 조회되었습니다. ", responseDto);
     }
 
     // 가게별 웨이팅 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<WaitingListResponseDto>> getWaitings(
-            @RequestParam Long restaurantId,
-            @RequestParam(required = false) String status,
+            @RequestParam BigInteger restaurantId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        WaitingListResponseDto responseDto = waitingService.getWaitings(restaurantId, status, page, size);
+        WaitingListResponseDto responseDto = waitingService.getWaitings(restaurantId, page, size);
         return ApiResponse.success(200, "", responseDto);
     }
 
 
-    // 웨이팅 수정 액션 통합형 (check-in, delay, going, arrived, cancel, call, no-show ...)
-    @PostMapping("/{waitingId}/actions/{action}")
-    public ResponseEntity<ApiResponse<WaitingResponseDto>> performAction(
-            @PathVariable Long waitingId,
-            @PathVariable String action,
-            @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
-            @RequestBody(required = false) Map<String, Object> payload) {
+//    // 웨이팅 수정 액션 통합형 (check-in, delay, going, arrived, cancel, call, no-show ...)
+//    @PostMapping("/{waitingId}/actions/{action}")
+//    public ResponseEntity<ApiResponse<WaitingResponseDto>> performAction(
+//            @PathVariable Long waitingId,
+//            @PathVariable String action,
+//            @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
+//            @RequestBody(required = false) Map<String, Object> payload) {
+//
+//        WaitingResponseDto responseDto = waitingActionService.perform(waitingId, action, idemKey, payload);
+//        // call 같은 비동기 액션은 202로도 가능
+//        return ApiResponse.success(202, "웨이팅이 수정되었습니다.", responseDto);
+//    }
 
-        WaitingResponseDto responseDto = waitingActionService.perform(waitingId, action, idemKey, payload);
-        // call 같은 비동기 액션은 202로도 가능
-        return ApiResponse.success(202, "웨이팅이 수정되었습니다.", responseDto);
-    }
 
     // 웨이팅 단건 삭제
     @DeleteMapping("/{waitingId}")
     public ResponseEntity<ApiResponse<Void>> deleteWaiting(
             @Validated
-            @PathVariable Long waitingId,
-            @RequestBody WaitingRequestDto requestDto){
-        waitingService.deleteWaiting(requestDto);
+            @PathVariable BigInteger waitingId){
+        waitingService.deleteWaiting(waitingId);
         return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
     }
 
     // 웨이팅 모든 음식점에서 전체 삭제
-    @DeleteMapping("/all")
+    @DeleteMapping("/all/{restaurantId}")
     public ResponseEntity<ApiResponse<Void>> deleteWaitingAll(
             @Validated
-            @RequestBody WaitingRequestDto requestDto){
-        waitingService.deleteWaitingAll(requestDto);
+            @PathVariable BigInteger restaurantId){
+        waitingService.deleteWaitingAll(restaurantId);
         return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
     }
 }
