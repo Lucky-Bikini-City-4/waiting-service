@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.math.BigInteger;
 import java.sql.Time;
@@ -14,6 +16,8 @@ import java.sql.Time;
 @Entity
 @NoArgsConstructor
 @Table(name = "waitings")
+@Where(clause = "deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE waitings SET deleted_at = now() WHERE waiting_id = ?")
 public class Waiting extends BaseEntity {
 
     @Id @GeneratedValue
