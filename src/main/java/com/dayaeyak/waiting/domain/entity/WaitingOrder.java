@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-
+import org.hibernate.validator.constraints.UniqueElements;
 
 
 @Getter
@@ -25,7 +25,7 @@ public class WaitingOrder extends BaseEntity {
     @Column(name ="waiting_seq", nullable = false)  @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long waitingSeq;
 
-    @Column(name = "waiting_id")
+    @Column(name = "waiting_id", unique = true, nullable = false)
     private Long waitingId;
 
     @Column(name ="restaurant_id", nullable = false)
