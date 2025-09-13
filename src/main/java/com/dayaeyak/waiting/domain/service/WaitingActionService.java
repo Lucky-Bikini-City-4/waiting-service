@@ -16,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,8 +43,10 @@ public class WaitingActionService {
     private WaitingUpdateResponseDto call(Long waitingId, Map<String, Object> payload){
         CallType callType = requireEnum(payload, "type", CallType.class); // IMMINENT/FIRST/FINAL
 
-        WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        WaitingOrder waitingOrder = waitingOrderRepository.findDistinctFirstByWaitingId(waitingId);
+        if(waitingOrder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         switch (callType) {
             // case IMMINENT -> 앞에서 2팀에게 순서임박 자동 호출 (고도화 때 작업 처리반에서 진행 예정, 알람한테 요청)
@@ -69,8 +72,10 @@ public class WaitingActionService {
     }
 
     private WaitingUpdateResponseDto user_coming(Long waitingId, Map<String, Object> payload){
-        WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        WaitingOrder waitingOrder = waitingOrderRepository.findDistinctFirstByWaitingId(waitingId);
+        if(waitingOrder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         Object tmp = payload.get("move_time");
         Long moveTime = Long.parseLong(tmp.toString());
@@ -89,8 +94,10 @@ public class WaitingActionService {
     }
 
     private WaitingUpdateResponseDto user_arrived(Long waitingId, Map<String, Object> payload){
-        WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        WaitingOrder waitingOrder = waitingOrderRepository.findDistinctFirstByWaitingId(waitingId);
+        if(waitingOrder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         waitingOrder.setWaitingStatus(WaitingStatus.USER_ARRIVED);
 
@@ -107,8 +114,10 @@ public class WaitingActionService {
     private WaitingUpdateResponseDto cancel(Long waitingId, Map<String, Object> payload){
         CancelType cancelType = requireEnum(payload, "type", CancelType.class); // OWNER, USER
 
-        WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        WaitingOrder waitingOrder = waitingOrderRepository.findDistinctFirstByWaitingId(waitingId);
+        if(waitingOrder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -141,8 +150,10 @@ public class WaitingActionService {
     }
 
     private WaitingUpdateResponseDto entered(Long waitingId, Map<String, Object> payload){
-        WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        WaitingOrder waitingOrder = waitingOrderRepository.findDistinctFirstByWaitingId(waitingId);
+        if(waitingOrder == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
 
         waitingOrder.setWaitingStatus(WaitingStatus.USER_ENTERED);
 
