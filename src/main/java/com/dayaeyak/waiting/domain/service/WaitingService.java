@@ -6,6 +6,8 @@ import com.dayaeyak.waiting.domain.dto.response.WaitingListResponseDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingResponseDto;
 import com.dayaeyak.waiting.domain.entity.Waiting;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
+import com.dayaeyak.waiting.domain.entity.WaitingOrder;
+import com.dayaeyak.waiting.domain.repository.jpa.WaitingOrderRepository;
 import com.dayaeyak.waiting.domain.repository.jpa.WaitingRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -16,8 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-
 import java.math.BigInteger;
+import java.sql.Time;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -25,6 +28,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WaitingService {
 
+
+    private final WaitingOrderRepository waitingOrderRepository;
     private final WaitingRepository waitingRepository;
 
     public WaitingCreateResponseDto register(WaitingCreateRequestDto requestDto){
@@ -37,8 +42,27 @@ public class WaitingService {
                 .build();
         Waiting savedWaiting = waitingRepository.save(waiting);
 
-        return new WaitingCreateResponseDto(savedWaiting.getWaitingId());
+
+
+        BigInteger savedWaitingId = savedWaiting.getWaitingId();
+        // 추후에 레디스에 올려야함
+        Time initialTime = Time.valueOf(LocalTime.now());
+
+        WaitingOrder waitingOrder = WaitingOrder.builder()
+                .waitingId(waiting.getWaitingId())
+                .restaurantId(waiting.getRestaurantId())
+                .waitingStatus(waiting.getWaitingStatus())
+                .initialTime(initialTime.toString())
+                .build();
+
+        waitingOrderRepository.save(waitingOrder);
+
+        // 사장에게 등록되었다는 알람 보내야함
+
+        return new WaitingCreateResponseDto(savedWaitingId);
     }
+
+
 
     public WaitingResponseDto getWaiting(BigInteger waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
