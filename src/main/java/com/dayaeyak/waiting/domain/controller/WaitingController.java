@@ -5,6 +5,7 @@ import com.dayaeyak.waiting.domain.dto.request.WaitingRequestDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingCreateResponseDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingListResponseDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingResponseDto;
+import com.dayaeyak.waiting.domain.dto.response.WaitingUpdateResponseDto;
 import com.dayaeyak.waiting.domain.service.WaitingActionService;
 import com.dayaeyak.waiting.domain.service.WaitingService;
 import com.dayaeyak.waiting.utils.ApiResponse;
@@ -53,19 +54,16 @@ public class WaitingController {
         return ApiResponse.success(200, "", responseDto);
     }
 
+    // 웨이팅 수정 액션 통합형
+    @PostMapping("/{waitingId}/actions/{action}")
+    public ResponseEntity<ApiResponse<WaitingUpdateResponseDto>> updateAction(
+            @PathVariable BigInteger waitingId,
+            @PathVariable String action,
+            @RequestBody(required = false) Map<String, Object> payload) {
+        WaitingUpdateResponseDto responseDto = waitingActionService.updateWaiting(waitingId, action, payload);
 
-//    // 웨이팅 수정 액션 통합형 (check-in, delay, going, arrived, cancel, call, no-show ...)
-//    @PostMapping("/{waitingId}/actions/{action}")
-//    public ResponseEntity<ApiResponse<WaitingResponseDto>> performAction(
-//            @PathVariable Long waitingId,
-//            @PathVariable String action,
-//            @RequestHeader(value = "Idempotency-Key", required = false) String idemKey,
-//            @RequestBody(required = false) Map<String, Object> payload) {
-//
-//        WaitingResponseDto responseDto = waitingActionService.perform(waitingId, action, idemKey, payload);
-//        // call 같은 비동기 액션은 202로도 가능
-//        return ApiResponse.success(202, "웨이팅이 수정되었습니다.", responseDto);
-//    }
+        return ApiResponse.success(202, "웨이팅이 수정되었습니다.", responseDto);
+    }
 
 
     // 웨이팅 단건 삭제
