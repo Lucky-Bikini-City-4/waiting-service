@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
+import java.lang.Long;
 import java.util.Map;
 
 @RestController
@@ -38,7 +38,7 @@ public class WaitingController {
     @GetMapping("/{waitingId}")
     public ResponseEntity<ApiResponse<WaitingResponseDto>> getWaiting(
             @Validated
-            @PathVariable BigInteger waitingId){
+            @PathVariable Long waitingId){
         WaitingResponseDto responseDto = waitingService.getWaiting(waitingId);
         return ApiResponse.success(200, "웨이팅 단건이 조회되었습니다. ", responseDto);
     }
@@ -46,7 +46,7 @@ public class WaitingController {
     // 가게별 웨이팅 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<WaitingListResponseDto>> getWaitings(
-            @RequestParam BigInteger restaurantId,
+            @RequestParam Long restaurantId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         WaitingListResponseDto responseDto = waitingService.getWaitings(restaurantId, page, size);
@@ -72,17 +72,17 @@ public class WaitingController {
     @DeleteMapping("/{waitingId}")
     public ResponseEntity<ApiResponse<Void>> deleteWaiting(
             @Validated
-            @PathVariable BigInteger waitingId){
+            @PathVariable Long waitingId){
         waitingService.deleteWaiting(waitingId);
-        return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
+        return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
     }
 
     // 웨이팅 모든 음식점에서 전체 삭제
     @DeleteMapping("/all/{restaurantId}")
     public ResponseEntity<ApiResponse<Void>> deleteWaitingAll(
             @Validated
-            @PathVariable BigInteger restaurantId){
+            @PathVariable Long restaurantId){
         waitingService.deleteWaitingAll(restaurantId);
-        return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
+        return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
     }
 }

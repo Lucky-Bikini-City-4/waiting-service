@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
-import java.math.BigInteger;
 import java.util.List;
 
 @Service
@@ -40,14 +39,14 @@ public class WaitingService {
         return new WaitingCreateResponseDto(savedWaiting.getWaitingId());
     }
 
-    public WaitingResponseDto getWaiting(BigInteger waitingId){
+    public WaitingResponseDto getWaiting(Long waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new EntityNotFoundException());
         return WaitingResponseDto.from(waiting);
     }
 
     public WaitingListResponseDto getWaitings(
-            BigInteger restaurantId,
+            Long restaurantId,
             int page,
             int size
     ){
@@ -60,7 +59,7 @@ public class WaitingService {
         return new WaitingListResponseDto(result.getTotalElements(), data);
     }
 
-    public void deleteWaiting(BigInteger waitingId){
+    public void deleteWaiting(Long waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new EntityNotFoundException());
 
@@ -68,7 +67,7 @@ public class WaitingService {
         waiting.delete();
     }
 
-    public void deleteWaitingAll(BigInteger restaurantId){
+    public void deleteWaitingAll(Long restaurantId){
         List<Waiting> waitingList = waitingRepository.findByRestaurantIdAndDeletedAtIsNull(restaurantId);
         if (waitingList.isEmpty()) return;
 

@@ -4,15 +4,14 @@ import com.dayaeyak.waiting.domain.entity.Waiting;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
 import lombok.Builder;
 
-import java.math.BigInteger;
 import java.sql.Time;
 
 @Builder
 public record WaitingResponseDto(
-        BigInteger waitingId,
-        BigInteger restaurantId,
-        BigInteger datesId,
-        BigInteger userId,
+        Long waitingId,
+        Long restaurantId,
+        Long datesId,
+        Long userId,
         Integer userCount,
         WaitingStatus waitingStatus,
         Time entry_time
