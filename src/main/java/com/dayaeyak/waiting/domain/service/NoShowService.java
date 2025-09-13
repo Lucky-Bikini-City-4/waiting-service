@@ -17,7 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
+
 import java.util.List;
 
 @Service
@@ -38,14 +38,14 @@ public class NoShowService {
         return new NoShowCreateResponseDto(savedNoShow.getNoShowId());
     }
 
-    public NoShowResponseDto getNoShow(BigInteger noShowID){
+    public NoShowResponseDto getNoShow(Long noShowID){
         NoShow noshow = noShowRepository.findById(noShowID)
                 .orElseThrow(() -> new EntityNotFoundException());
         return NoShowResponseDto.from(noshow);
     }
 
     public NoShowListResponseDto getNoShows(
-            BigInteger restaurantId,
+            Long restaurantId,
             int page,
             int size
     ){
@@ -58,7 +58,7 @@ public class NoShowService {
         return new NoShowListResponseDto(result.getTotalElements(), data);
     }
 
-    public void deleteNoShow(BigInteger noShowID){
+    public void deleteNoShow(Long noShowID){
         NoShow noshow = noShowRepository.findById(noShowID)
                 .orElseThrow(() -> new EntityNotFoundException());
 
@@ -66,7 +66,7 @@ public class NoShowService {
         noshow.delete();
     }
 
-    public void deleteNoShowAll(BigInteger restaurantId){
+    public void deleteNoShowAll(Long restaurantId){
         List<NoShow> noshowList = noShowRepository.findByRestaurantIdAndDeletedAtIsNull(restaurantId);
         if (noshowList.isEmpty()) return;
 

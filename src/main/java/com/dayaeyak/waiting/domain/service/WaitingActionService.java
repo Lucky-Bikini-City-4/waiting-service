@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigInteger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class WaitingActionService {
     private final WaitingOrderRepository waitingOrderRepository;
 
     // 노쇼 처리 - 고도화때 작업 처리반 쪽으로 넘기기
-    public WaitingUpdateResponseDto updateWaiting(BigInteger waitingId, String action, Map<String, Object> payload){
+    public WaitingUpdateResponseDto updateWaiting(Long waitingId, String action, Map<String, Object> payload){
         return switch(action.toLowerCase()) {
             case "waiting_call" -> call(waitingId, payload);
             case "waiting_user_coming" -> user_coming(waitingId, payload);
@@ -39,7 +39,7 @@ public class WaitingActionService {
         };
     }
 
-    private WaitingUpdateResponseDto call(BigInteger waitingId, Map<String, Object> payload){
+    private WaitingUpdateResponseDto call(Long waitingId, Map<String, Object> payload){
         CallType callType = requireEnum(payload, "type", CallType.class); // IMMINENT/FIRST/FINAL
 
         WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
@@ -68,7 +68,7 @@ public class WaitingActionService {
         return new WaitingUpdateResponseDto(waitingId);
     }
 
-    private WaitingUpdateResponseDto user_coming(BigInteger waitingId, Map<String, Object> payload){
+    private WaitingUpdateResponseDto user_coming(Long waitingId, Map<String, Object> payload){
         WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -88,7 +88,7 @@ public class WaitingActionService {
         return new WaitingUpdateResponseDto(waitingId);
     }
 
-    private WaitingUpdateResponseDto user_arrived(BigInteger waitingId, Map<String, Object> payload){
+    private WaitingUpdateResponseDto user_arrived(Long waitingId, Map<String, Object> payload){
         WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -104,7 +104,7 @@ public class WaitingActionService {
         return new WaitingUpdateResponseDto(waitingId);
     }
 
-    private WaitingUpdateResponseDto cancel(BigInteger waitingId, Map<String, Object> payload){
+    private WaitingUpdateResponseDto cancel(Long waitingId, Map<String, Object> payload){
         CancelType cancelType = requireEnum(payload, "type", CancelType.class); // OWNER, USER
 
         WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
@@ -140,7 +140,7 @@ public class WaitingActionService {
         return new WaitingUpdateResponseDto(waitingId);
     }
 
-    private WaitingUpdateResponseDto entered(BigInteger waitingId, Map<String, Object> payload){
+    private WaitingUpdateResponseDto entered(Long waitingId, Map<String, Object> payload){
         WaitingOrder waitingOrder = waitingOrderRepository.findById(waitingId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 

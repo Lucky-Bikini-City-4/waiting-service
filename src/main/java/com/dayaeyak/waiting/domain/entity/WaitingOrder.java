@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.math.BigInteger;
+
 
 @Getter
 @Entity
@@ -23,13 +23,13 @@ public class WaitingOrder extends BaseEntity {
 
     @Id
     @Column(name ="waiting_seq", nullable = false)  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private BigInteger waitingSeq;
+    private Long waitingSeq;
 
     @Column(name = "waiting_id")
-    private BigInteger waitingId;
+    private Long waitingId;
 
     @Column(name ="restaurant_id", nullable = false)
-    private BigInteger restaurantId;
+    private Long restaurantId;
 
     @Enumerated(EnumType.STRING)
     @Column(name ="waiting_status", nullable = false, length = 32)
@@ -46,9 +46,9 @@ public class WaitingOrder extends BaseEntity {
 
     @Builder
     public WaitingOrder(
-            BigInteger waitingSeq,
-            BigInteger waitingId,
-            BigInteger restaurantId,
+            Long waitingSeq,
+            Long waitingId,
+            Long restaurantId,
             WaitingStatus waitingStatus,
             String initialTime,
             String deadline,
@@ -72,8 +72,8 @@ public class WaitingOrder extends BaseEntity {
 //public class WaitingOrder implements Serializable {
 //
 //    @Id
-//    private BigInteger waitingId;
-//    private BigInteger restaurantId;
+//    private Long waitingId;
+//    private Long restaurantId;
 //    private WaitingStatus waitingStatus;
 //    private String initialTime;
 //    private String deadline;
@@ -81,8 +81,8 @@ public class WaitingOrder extends BaseEntity {
 //
 //    @Builder
 //    public WaitingOrder(
-//            BigInteger waitingId,
-//            BigInteger restaurantId,
+//            Long waitingId,
+//            Long restaurantId,
 //            WaitingStatus waitingStatus,
 //            String initialTime,
 //            String deadline,

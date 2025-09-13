@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.math.BigInteger;
+import java.lang.Long;
+
 
 @Getter
 @Entity
@@ -21,17 +22,17 @@ public class NoShow extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "no_show_id")
-    private BigInteger noShowId;
+    private Long noShowId;
 
     @Column(name ="user_id", nullable = false)
-    private BigInteger userId;
+    private Long userId;
 
     @Column(name ="restaurant_id", nullable = false)
-    private BigInteger restaurantId;
+    private Long restaurantId;
 
     @Builder
-    public NoShow(BigInteger restaurantId,
-                   BigInteger userId){
+    public NoShow(Long restaurantId,
+                   Long userId){
         this.restaurantId = restaurantId;
         this.userId = userId;
     }

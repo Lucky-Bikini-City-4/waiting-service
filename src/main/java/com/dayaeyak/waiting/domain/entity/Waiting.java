@@ -10,7 +10,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
-import java.math.BigInteger;
+
 import java.sql.Time;
 
 @Getter
@@ -24,16 +24,16 @@ public class Waiting extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "waiting_id")
-    private BigInteger waitingId;
+    private Long waitingId;
 
     @Column(name ="restaurant_id", nullable = false)
-    private BigInteger restaurantId;
+    private Long restaurantId;
 
     @Column(name ="dates_id", nullable = false)
-    private BigInteger datesId;
+    private Long datesId;
 
     @Column(name ="user_id", nullable = false)
-    private BigInteger userId;
+    private Long userId;
 
     @Column(name ="user_count", nullable = false)
     private Integer userCount;
@@ -46,9 +46,9 @@ public class Waiting extends BaseEntity {
     private Time entryTime;
 
     @Builder
-    public Waiting(BigInteger restaurantId,
-                   BigInteger datesId,
-                   BigInteger userId,
+    public Waiting(Long restaurantId,
+                   Long datesId,
+                   Long userId,
                    Integer userCount,
                    WaitingStatus waitingStatus){
         this.restaurantId = restaurantId;

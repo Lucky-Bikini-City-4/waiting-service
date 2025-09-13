@@ -18,7 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
+
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.List;
@@ -44,7 +44,7 @@ public class WaitingService {
 
 
 
-        BigInteger savedWaitingId = savedWaiting.getWaitingId();
+        Long savedWaitingId = savedWaiting.getWaitingId();
         // 추후에 레디스에 올려야함
         Time initialTime = Time.valueOf(LocalTime.now());
 
@@ -64,14 +64,14 @@ public class WaitingService {
 
 
 
-    public WaitingResponseDto getWaiting(BigInteger waitingId){
+    public WaitingResponseDto getWaiting(Long waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new EntityNotFoundException());
         return WaitingResponseDto.from(waiting);
     }
 
     public WaitingListResponseDto getWaitings(
-            BigInteger restaurantId,
+            Long restaurantId,
             int page,
             int size
     ){
@@ -84,7 +84,7 @@ public class WaitingService {
         return new WaitingListResponseDto(result.getTotalElements(), data);
     }
 
-    public void deleteWaiting(BigInteger waitingId){
+    public void deleteWaiting(Long waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new EntityNotFoundException());
 
@@ -92,7 +92,7 @@ public class WaitingService {
         waiting.delete();
     }
 
-    public void deleteWaitingAll(BigInteger restaurantId){
+    public void deleteWaitingAll(Long restaurantId){
         List<Waiting> waitingList = waitingRepository.findByRestaurantIdAndDeletedAtIsNull(restaurantId);
         if (waitingList.isEmpty()) return;
 
