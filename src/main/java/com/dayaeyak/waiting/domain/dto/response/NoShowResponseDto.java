@@ -2,10 +2,11 @@ package com.dayaeyak.waiting.domain.dto.response;
 
 import com.dayaeyak.waiting.domain.entity.NoShow;
 import lombok.Builder;
+import lombok.Setter;
 
 
 
-@Builder
+
 public record NoShowResponseDto (
     Long noShowId,
     Long restaurantId,
@@ -13,10 +14,10 @@ public record NoShowResponseDto (
 ){
 
     public static NoShowResponseDto from(NoShow noshow){
-        return NoShowResponseDto.builder()
-                .noShowId(noshow.getNoShowId())
-                .restaurantId(noshow.getRestaurantId())
-                .userId(noshow.getUserId())
-                .build();
+        return new NoShowResponseDto(
+                noshow.getNoShowId(),
+                noshow.getRestaurantId(),
+                noshow.getUserId()
+        );
     }
 }

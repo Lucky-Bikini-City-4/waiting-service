@@ -4,7 +4,6 @@ import com.dayaeyak.waiting.domain.entity.Waiting;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
 import lombok.Builder;
 
-
 import java.sql.Time;
 
 @Builder

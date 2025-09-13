@@ -62,8 +62,6 @@ public class WaitingService {
         return new WaitingCreateResponseDto(savedWaitingId);
     }
 
-
-
     public WaitingResponseDto getWaiting(Long waitingId){
         Waiting waiting = waitingRepository.findById(waitingId)
                 .orElseThrow(() -> new EntityNotFoundException());

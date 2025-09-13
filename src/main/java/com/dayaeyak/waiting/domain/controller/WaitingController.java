@@ -15,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.Long;
-
 import java.util.Map;
 
 @RestController
@@ -73,7 +72,7 @@ public class WaitingController {
             @Validated
             @PathVariable Long waitingId){
         waitingService.deleteWaiting(waitingId);
-        return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
+        return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
     }
 
     // 웨이팅 모든 음식점에서 전체 삭제
@@ -82,6 +81,6 @@ public class WaitingController {
             @Validated
             @PathVariable Long restaurantId){
         waitingService.deleteWaitingAll(restaurantId);
-        return ApiResponse.success(204, "웨이팅이 삭되었습니다.", null);
+        return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
     }
 }
