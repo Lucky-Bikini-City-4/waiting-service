@@ -3,6 +3,7 @@ package com.dayaeyak.waiting.domain.service;
 import com.dayaeyak.waiting.domain.dto.request.WaitingCreateRequestDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingCreateResponseDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingListResponseDto;
+import com.dayaeyak.waiting.domain.dto.response.WaitingOrderResponseDto;
 import com.dayaeyak.waiting.domain.dto.response.WaitingResponseDto;
 import com.dayaeyak.waiting.domain.entity.Waiting;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 
 import java.sql.Time;
@@ -99,5 +101,18 @@ public class WaitingService {
                 waiting.delete();
             }
         }
+    }
+
+    public WaitingOrderResponseDto getWaitingOrder(Long waitingId){
+        WaitingOrder wo = waitingOrderRepository.findByWaitingIdAndDeletedAtIsNull(waitingId);
+        if(wo == null) {
+            throw new EntityNotFoundException();
+        }
+        long cnt = waitingOrderRepository.countByWaitingSeqLessThanAndWaitingStatusNotIn(
+                wo.getWaitingSeq(),
+                List.of(WaitingStatus.OWNER_CANCEL, WaitingStatus.USER_CANCEL,
+                        WaitingStatus.USER_ENTERED, WaitingStatus.USER_NO_SHOW)
+        );
+        return new WaitingOrderResponseDto(cnt, waitingId);
     }
 }
