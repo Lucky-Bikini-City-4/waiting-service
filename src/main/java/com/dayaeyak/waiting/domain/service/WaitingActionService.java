@@ -28,7 +28,7 @@ public class WaitingActionService {
     private final WaitingRepository waitingRepository;
     private final WaitingOrderRepository waitingOrderRepository;
 
-    // 노쇼 처리 - 고도화때 작업 처리반 쪽으로 넘기기
+    // TODO 노쇼 처리 - 고도화때 작업 처리반 쪽으로 넘기기
     public WaitingUpdateResponseDto updateWaiting(Long waitingId, String action, Map<String, Object> payload){
         return switch(action.toLowerCase()) {
             case "waiting_call" -> call(waitingId, payload);
@@ -49,21 +49,21 @@ public class WaitingActionService {
         }
 
         switch (callType) {
-            // case IMMINENT -> 앞에서 2팀에게 순서임박 자동 호출 (고도화 때 작업 처리반에서 진행 예정, 알람한테 요청)
+            // TODO case IMMINENT -> 앞에서 2팀에게 순서임박 자동 호출 (고도화 때 작업 처리반에서 진행 예정, 알람한테 요청)
             case FIRST -> {
                 waitingOrder.setWaitingStatus(WaitingStatus.FIRST_CALLED);
-                // 알람한테 요청
-                // 고도화때 작업 처리반 쪽으로 넘기기
+                // TODO 알람한테 요청
+                // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
             case FINAL -> {
                 waitingOrder.setWaitingStatus(WaitingStatus.FINAL_CALLED);
-                // 알람한테 요청
-                // 고도화때 작업 처리반 쪽으로 넘기기
+                // TODO 알람한테 요청
+                // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 call Type입니다.");
         }
 
-        // 배포전에 외국 시간으로 바꾸기
+        // TODO 배포전에 외국 시간으로 바꾸기
         waitingOrder.setLastCallAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
         waitingOrder.setDeadline(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(10).toString());
 
@@ -82,10 +82,10 @@ public class WaitingActionService {
 
         waitingOrder.setWaitingStatus(WaitingStatus.USER_COMING);
 
-        // 알람한테 요청
-        // 고도화때 작업 처리반 쪽으로 넘기기
+        // TODO 알람한테 요청
+        // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
-        // 배포전에 외국 시간으로 바꾸기
+        // TODO 배포전에 외국 시간으로 바꾸기
         waitingOrder.setDeadline(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(moveTime).toString());
 
         waitingOrderRepository.save(waitingOrder);
@@ -101,10 +101,10 @@ public class WaitingActionService {
 
         waitingOrder.setWaitingStatus(WaitingStatus.USER_ARRIVED);
 
-        // 알람한테 요청
-        // 고도화때 작업 처리반 쪽으로 넘기기
+        // TODO 알람한테 요청
+        // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
-        // 배포전에 외국 시간으로 바꾸기
+        // TODO 배포전에 외국 시간으로 바꾸기
         waitingOrder.setDeadline(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
         waitingOrderRepository.save(waitingOrder);
@@ -126,22 +126,22 @@ public class WaitingActionService {
             case OWNER -> {
                 waitingOrder.setWaitingStatus(WaitingStatus.OWNER_CANCEL);
                 waiting.setWaitingStatus(WaitingStatus.OWNER_CANCEL);
-                // 알람한테 요청
-                // 고도화때 작업 처리반 쪽으로 넘기기
+                // TODO 알람한테 요청
+                // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
             case USER -> {
                 waitingOrder.setWaitingStatus(WaitingStatus.USER_CANCEL);
                 waiting.setWaitingStatus(WaitingStatus.USER_CANCEL);
-                // 알람한테 요청
-                // 고도화때 작업 처리반 쪽으로 넘기기
+                // TODO 알람한테 요청
+                // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "지원하지 않는 call Type입니다.");
         }
 
-        // 배포전에 외국 시간으로 바꾸기
+        // TODO 배포전에 외국 시간으로 바꾸기
 
-        // 레디스에서 내리고
-        // DB에 기록
+        // TODO 레디스에서 내리고
+        // TODO DB에 기록
 
         waitingOrderRepository.save(waitingOrder);
         waitingRepository.save(waiting);
@@ -157,8 +157,8 @@ public class WaitingActionService {
 
         waitingOrder.setWaitingStatus(WaitingStatus.USER_ENTERED);
 
-        // 알람한테 요청
-        // 고도화때 작업 처리반 쪽으로 넘기기
+        // TODO 알람한테 요청
+        // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
         waitingOrderRepository.save(waitingOrder);
         return new WaitingUpdateResponseDto(waitingId);
