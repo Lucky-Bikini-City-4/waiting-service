@@ -2,7 +2,7 @@ package com.dayaeyak.waiting.domain.dto.request;
 
 import lombok.Getter;
 
-
+import java.lang.Long;
 @Getter
 public class WaitingCreateRequestDto {
     private Long restaurantId;

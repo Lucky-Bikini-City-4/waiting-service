@@ -7,6 +7,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class NoShowCreateResponseDto {
-    private Long noShowId;
+public class WaitingUpdateResponseDto {
+    Long waitingId;
 }

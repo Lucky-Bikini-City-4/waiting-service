@@ -4,13 +4,13 @@ import com.dayaeyak.waiting.domain.entity.NoShow;
 import lombok.Builder;
 import lombok.Setter;
 
-import java.math.BigInteger;
+
 
 
 public record NoShowResponseDto (
-    BigInteger noShowId,
-    BigInteger restaurantId,
-    BigInteger userId
+    Long noShowId,
+    Long restaurantId,
+    Long userId
 ){
 
     public static NoShowResponseDto from(NoShow noshow){

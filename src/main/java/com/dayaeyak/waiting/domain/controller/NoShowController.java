@@ -11,7 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
+import java.lang.Long;
+
 
 @Controller
 @RestController
@@ -35,7 +36,7 @@ public class NoShowController {
     @GetMapping("/{noShowId}")
     public ResponseEntity<ApiResponse<NoShowResponseDto>> getNoShow(
             @Validated
-            @PathVariable BigInteger noShowId){
+            @PathVariable Long noShowId){
         NoShowResponseDto responseDto = noshowService.getNoShow(noShowId);
         return ApiResponse.success(200, "노쇼유저가 조회되었습니다. ", responseDto);
     }
@@ -43,7 +44,7 @@ public class NoShowController {
     // 가게별 웨이팅 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<NoShowListResponseDto>> getNoShows(
-            @RequestParam BigInteger restaurantId,
+            @RequestParam Long restaurantId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         NoShowListResponseDto responseDto = noshowService.getNoShows(restaurantId, page, size);
@@ -54,7 +55,7 @@ public class NoShowController {
     @DeleteMapping("/{noShowId}")
     public ResponseEntity<ApiResponse<Void>> deleteNoShow(
             @Validated
-            @PathVariable BigInteger noShowId){
+            @PathVariable Long noShowId){
         noshowService.deleteNoShow(noShowId);
         return ApiResponse.success(204, "노쇼유저가 삭되었습니다.", null);
     }
@@ -63,7 +64,7 @@ public class NoShowController {
     @DeleteMapping("/all/{restaurantId}")
     public ResponseEntity<ApiResponse<Void>> deleteNoShowAll(
             @Validated
-            @PathVariable BigInteger restaurantId){
+            @PathVariable Long restaurantId){
         noshowService.deleteNoShowAll(restaurantId);
         return ApiResponse.success(204, "노쇼유저가 삭되었습니다.", null);
     }

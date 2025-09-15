@@ -7,14 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigInteger;
+
 import java.util.List;
 
 @Repository
-public interface NoShowRepository extends JpaRepository<NoShow, BigInteger> {
+public interface NoShowRepository extends JpaRepository<NoShow, Long> {
     NoShow save(NoShow noShow);
-    Page<NoShow> findByRestaurantIdAndDeletedAtIsNull(BigInteger restaurantId, Pageable pageable);
-    List<NoShow> findByRestaurantIdAndDeletedAtIsNull(BigInteger restaurantId);
+    Page<NoShow> findByRestaurantIdAndDeletedAtIsNull(Long restaurantId, Pageable pageable);
+    List<NoShow> findByRestaurantIdAndDeletedAtIsNull(Long restaurantId);
 
 }
 
