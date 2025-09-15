@@ -2,10 +2,7 @@ package com.dayaeyak.waiting.domain.controller;
 
 import com.dayaeyak.waiting.domain.dto.request.WaitingCreateRequestDto;
 import com.dayaeyak.waiting.domain.dto.request.WaitingRequestDto;
-import com.dayaeyak.waiting.domain.dto.response.WaitingCreateResponseDto;
-import com.dayaeyak.waiting.domain.dto.response.WaitingListResponseDto;
-import com.dayaeyak.waiting.domain.dto.response.WaitingResponseDto;
-import com.dayaeyak.waiting.domain.dto.response.WaitingUpdateResponseDto;
+import com.dayaeyak.waiting.domain.dto.response.*;
 import com.dayaeyak.waiting.domain.service.WaitingActionService;
 import com.dayaeyak.waiting.domain.service.WaitingService;
 import com.dayaeyak.waiting.utils.ApiResponse;
@@ -82,5 +79,14 @@ public class WaitingController {
             @PathVariable Long restaurantId){
         waitingService.deleteWaitingAll(restaurantId);
         return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
+    }
+
+    // 웨이팅 id로 대기 순번 조회
+    @GetMapping("/order/{waitingId}")
+    public ResponseEntity<ApiResponse<WaitingOrderResponseDto>> getWaitingOrder(
+            @Validated
+            @PathVariable Long waitingId){
+        WaitingOrderResponseDto responseDto = waitingService.getWaitingOrder(waitingId);
+        return ApiResponse.success(200, "웨이팅 순번이 조회되었습니다.", responseDto);
     }
 }
