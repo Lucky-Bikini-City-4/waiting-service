@@ -12,6 +12,7 @@ import java.util.List;
 @Repository
 public interface WaitingRepository extends JpaRepository<Waiting, Long> {
     Waiting save(Waiting waiting);
+    Waiting findByWaitingId(long id);
     Page<Waiting> findByRestaurantIdAndDeletedAtIsNull(Long restaurantId, Pageable pageable);
     List<Waiting> findByRestaurantIdAndDeletedAtIsNull(Long restaurantId);
 
