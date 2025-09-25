@@ -44,7 +44,7 @@ public class Waiting extends BaseEntity {
     private WaitingStatus waitingStatus;
 
     @Column(name ="entry_time")
-    private Time entryTime;
+    private String entryTime;
 
     @Builder
     public Waiting(Long restaurantId,

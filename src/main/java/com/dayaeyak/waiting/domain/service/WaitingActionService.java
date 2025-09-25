@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.sql.Time;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -66,9 +68,11 @@ public class WaitingActionService {
         // TODO 배포전에 외국 시간으로 바꾸기
         waitingOrder.setLastCallAt(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
         waitingOrder.setDeadline(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).plusMinutes(10).toString());
+        Waiting waiting = waitingRepository.findByWaitingId(waitingId);
+        waiting.setEntryTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
         waitingOrderRepository.save(waitingOrder);
-        return new WaitingUpdateResponseDto(waitingId);
+        return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
 
     private WaitingUpdateResponseDto user_coming(Long waitingId, Map<String, Object> payload){
@@ -90,7 +94,7 @@ public class WaitingActionService {
 
         waitingOrderRepository.save(waitingOrder);
 
-        return new WaitingUpdateResponseDto(waitingId);
+        return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
 
     private WaitingUpdateResponseDto user_arrived(Long waitingId, Map<String, Object> payload){
@@ -108,7 +112,7 @@ public class WaitingActionService {
         waitingOrder.setDeadline(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
         waitingOrderRepository.save(waitingOrder);
-        return new WaitingUpdateResponseDto(waitingId);
+        return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
 
     private WaitingUpdateResponseDto cancel(Long waitingId, Map<String, Object> payload){
@@ -146,7 +150,7 @@ public class WaitingActionService {
         waitingOrderRepository.save(waitingOrder);
         waitingRepository.save(waiting);
 
-        return new WaitingUpdateResponseDto(waitingId);
+        return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
 
     private WaitingUpdateResponseDto entered(Long waitingId, Map<String, Object> payload){
@@ -155,13 +159,15 @@ public class WaitingActionService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
+        Waiting waiting = waitingRepository.findByWaitingId(waitingId);
+        waiting.setWaitingStatus(WaitingStatus.USER_ENTERED);
         waitingOrder.setWaitingStatus(WaitingStatus.USER_ENTERED);
 
         // TODO 알람한테 요청
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
         waitingOrderRepository.save(waitingOrder);
-        return new WaitingUpdateResponseDto(waitingId);
+        return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
 
 
