@@ -14,7 +14,7 @@ public record WaitingResponseDto(
         Long userId,
         Integer userCount,
         WaitingStatus waitingStatus,
-        Time entry_time
+        String entry_time
         ) {
 
     public static WaitingResponseDto from(Waiting waiting){
