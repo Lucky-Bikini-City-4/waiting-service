@@ -14,12 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
-import java.sql.Time;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 @Service
@@ -84,7 +81,7 @@ public class WaitingActionService {
         Object tmp = payload.get("move_time");
         Long moveTime = Long.parseLong(tmp.toString());
 
-        waitingOrder.setWaitingStatus(WaitingStatus.USER_COMING);
+        waitingOrder.setWaitingStatus(WaitingStatus.COMMITING);
 
         // TODO 알람한테 요청
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
@@ -103,7 +100,7 @@ public class WaitingActionService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
 
-        waitingOrder.setWaitingStatus(WaitingStatus.USER_ARRIVED);
+        waitingOrder.setWaitingStatus(WaitingStatus.ARRIVED);
 
         // TODO 알람한테 요청
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
@@ -134,8 +131,8 @@ public class WaitingActionService {
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
             case USER -> {
-                waitingOrder.setWaitingStatus(WaitingStatus.USER_CANCEL);
-                waiting.setWaitingStatus(WaitingStatus.USER_CANCEL);
+                waitingOrder.setWaitingStatus(WaitingStatus.CANCEL);
+                waiting.setWaitingStatus(WaitingStatus.CANCEL);
                 // TODO 알람한테 요청
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
             }
@@ -160,8 +157,8 @@ public class WaitingActionService {
         }
 
         Waiting waiting = waitingRepository.findByWaitingId(waitingId);
-        waiting.setWaitingStatus(WaitingStatus.USER_ENTERED);
-        waitingOrder.setWaitingStatus(WaitingStatus.USER_ENTERED);
+        waiting.setWaitingStatus(WaitingStatus.ENTERED);
+        waitingOrder.setWaitingStatus(WaitingStatus.ENTERED);
 
         // TODO 알람한테 요청
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
@@ -169,8 +166,6 @@ public class WaitingActionService {
         waitingOrderRepository.save(waitingOrder);
         return new WaitingUpdateResponseDto(waitingId, waitingOrder.getWaitingStatus());
     }
-
-
 
 
     private static <E extends Enum<E>> E requireEnum(Map<String,Object> m, String key, Class<E> type){
