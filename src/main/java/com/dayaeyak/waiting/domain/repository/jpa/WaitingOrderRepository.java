@@ -13,10 +13,12 @@ import java.util.List;
 public interface WaitingOrderRepository extends JpaRepository<WaitingOrder, Long> {
     WaitingOrder findDistinctFirstByWaitingId(Long waitingId);
     WaitingOrder findByWaitingIdAndDeletedAtIsNull(Long waitingId);
-    Long countByWaitingSeqLessThanAndWaitingStatusNotIn(
+    Long countByRestaurantIdAndWaitingSeqLessThanAndWaitingStatusNotIn(
+            Long restaurantId,
             Long waitingSeq,
             Collection<WaitingStatus> excludedStatuses
     );
+    List<WaitingOrder>  findAllByRestaurantIdAndDeletedAtIsNull(Long restaurantId);
 
 }
 

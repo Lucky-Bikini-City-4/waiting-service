@@ -104,14 +104,17 @@ public class WaitingService {
     }
 
     public WaitingOrderResponseDto getWaitingOrder(Long waitingId){
+        Waiting w = waitingRepository.findByWaitingId(waitingId);
+        long restaurantId = w.getRestaurantId();
         WaitingOrder wo = waitingOrderRepository.findByWaitingIdAndDeletedAtIsNull(waitingId);
         if(wo == null) {
             throw new EntityNotFoundException();
         }
-        long cnt = waitingOrderRepository.countByWaitingSeqLessThanAndWaitingStatusNotIn(
+        long cnt = waitingOrderRepository.countByRestaurantIdAndWaitingSeqLessThanAndWaitingStatusNotIn(
+                restaurantId,
                 wo.getWaitingSeq(),
-                List.of(WaitingStatus.OWNER_CANCEL, WaitingStatus.USER_CANCEL,
-                        WaitingStatus.USER_ENTERED, WaitingStatus.USER_NO_SHOW)
+                List.of(WaitingStatus.OWNER_CANCEL, WaitingStatus.CANCEL,
+                        WaitingStatus.ENTERED, WaitingStatus.NO_ANSWER2)
         );
         return new WaitingOrderResponseDto(cnt, waitingId);
     }
