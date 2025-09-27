@@ -35,33 +35,21 @@ public class WaitingOrder extends BaseEntity {
     @Column(name ="waiting_status", nullable = false, length = 32)
     private WaitingStatus waitingStatus;
 
-    @Column(name ="initial_time")
-    private String initialTime;
-
     @Column(name ="deadline")
     private String deadline;
-
-    @Column(name ="last_call_at")
-    private String lastCallAt;
 
     @Builder
     public WaitingOrder(
             Long waitingSeq,
             Long waitingId,
             Long restaurantId,
-            WaitingStatus waitingStatus,
-            String initialTime,
-            String deadline,
-            String lastCallAt
-
+            WaitingStatus waitingStatus
     ) {
         this.waitingSeq = waitingSeq;
         this.waitingId = waitingId;
         this.restaurantId = restaurantId;
         this.waitingStatus = waitingStatus;
-        this.initialTime = initialTime;
         this.deadline = null;
-        this.lastCallAt = null;
     }
 }
 
