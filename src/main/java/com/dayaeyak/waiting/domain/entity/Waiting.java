@@ -43,19 +43,24 @@ public class Waiting extends BaseEntity {
     @Column(name ="waiting_status", nullable = false, length = 32)
     private WaitingStatus waitingStatus;
 
-    @Column(name ="entry_time")
-    private String entryTime;
+    @Column(name ="closed_time")
+    private String closedTime;
+
+    @Column(name ="waiting_seq", nullable = false)
+    private Long waitingSeq;
 
     @Builder
     public Waiting(Long restaurantId,
                    Long datesId,
                    Long userId,
                    Integer userCount,
-                   WaitingStatus waitingStatus){
+                   WaitingStatus waitingStatus,
+                   Long waitingSeq){
         this.restaurantId = restaurantId;
         this.datesId = datesId;
         this.userId = userId;
         this.userCount = userCount;
         this.waitingStatus = waitingStatus;
+        this.waitingSeq = waitingSeq;
     }
 }
