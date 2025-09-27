@@ -5,90 +5,68 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-//@Configuration
+@Configuration
 public class RedisConfig {
-//
-//    @Value("${spring.redis.host}")
-//    private String host;
-//
-//    @Value("${spring.redis.port}")
-//    private int port;
-//
-//    /**
-//     * Redis 연결을 위한 'Connection' 생성합니다.
-//     *
-//     * @return RedisConnectionFactory
-//     */
-//    @Bean
-//    public RedisConnectionFactory redisConnectionFactory() {
-//        return new LettuceConnectionFactory(host, port);
-//    }
-//
-//    /**
-//     * Redis 데이터 처리를 위한 템플릿을 구성합니다.
-//     * 해당 구성된 RedisTemplate을 통해서 데이터 통신으로 처리되는 대한 직렬화를 수행합니다.
-//     *
-//     * @return RedisTemplate<String, Object>
-//     */
-//    @Bean
-//    public RedisTemplate<String, Object> redisTemplate() {
-//        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-//
-//        // Redis를 연결합니다.
-//        redisTemplate.setConnectionFactory(redisConnectionFactory());
-//
-//        // Key-Value 형태로 직렬화를 수행합니다.
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setValueSerializer(new StringRedisSerializer());
-//
-//        // Hash Key-Value 형태로 직렬화를 수행합니다.
-//        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-//        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-//
-//        // 기본적으로 직렬화를 수행합니다.
-//        redisTemplate.setDefaultSerializer(new StringRedisSerializer());
-//
-//        return redisTemplate;
-//    }
-//
-//    /**
-//     * 리스트에 접근하여 다양한 연산을 수행합니다.
-//     *
-//     * @return ListOperations<String, Object>
-//     */
-//    public ListOperations<String, Object> getListOperations() {
-//        return this.redisTemplate().opsForList();
-//    }
-//
-//    /**
-//     * 단일 데이터에 접근하여 다양한 연산을 수행합니다.
-//     *
-//     * @return ValueOperations<String, Object>
-//     */
-//    public ValueOperations<String, Object> getValueOperations() {
-//        return this.redisTemplate().opsForValue();
-//    }
-//
-//
-//    /**
-//     * Redis 작업중 등록, 수정, 삭제에 대해서 처리 및 예외처리를 수행합니다.
-//     *
-//     * @param operation
-//     * @return
-//     */
-//    public int executeOperation(Runnable operation) {
-//        try {
-//            operation.run();
-//            return 1;
-//        } catch (Exception e) {
-//            System.out.println("Redis 작업 오류 발생 :: " + e.getMessage());
-//            return 0;
-//        }
-//    }
+
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory(
+            @Value("${spring.data.redis.host}") String host,
+            @Value("${spring.data.redis.port}") int port
+    ) {
+        RedisStandaloneConfiguration conf = new RedisStandaloneConfiguration(host, port);
+        return new LettuceConnectionFactory(conf);
+    }
+
+    // 1) 문자열 위주(키/필드/멤버가 전부 String인 ZSET/HASH)
+    @Bean
+    public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory cf) {
+        StringRedisTemplate t = new StringRedisTemplate();
+        t.setConnectionFactory(cf);
+        // key/hashKey는 문자열로
+        t.setKeySerializer(new StringRedisSerializer());
+        t.setHashKeySerializer(new StringRedisSerializer());
+        // 기본 serializer는 String으로 충분 (ZSET/HASH 멤버/필드가 문자열)
+        return t;
+    }
+
+    // 2) 상태 전이 원자처리용 Lua
+    @Bean
+    public org.springframework.data.redis.core.script.DefaultRedisScript<Long> waitingStateScript() {
+        String lua = """
+        -- KEYS[1]=activeZset, KEYS[2]=waitingHash
+        -- ARGV: op, seq, waitingId, status, expireAt(ms)
+        local op = ARGV[1]
+        if op == 'ACTIVATE' then
+          redis.call('ZADD', KEYS[1], ARGV[2], ARGV[3])
+          redis.call('HSET', KEYS[2], 'status', ARGV[4], 'seq', ARGV[2])
+          return 1
+         else
+          local member   = tostring(ARGV[3] or "")
+          local status   = tostring(ARGV[4] or "")
+          local expireAt = tonumber(ARGV[5]) or 0
+    
+          redis.call('ZREM', KEYS[1], member)
+    
+          if expireAt == 0 then
+            redis.call('DEL', KEYS[2])                  -- 즉시 삭제
+          else
+            redis.call('HSET', KEYS[2], 'status', status, 'expireAt', expireAt)
+            redis.call('PEXPIREAT', KEYS[2], expireAt)  -- 밀리초 만료
+          end
+          return 1
+        end
+        """;
+        var script = new org.springframework.data.redis.core.script.DefaultRedisScript<Long>();
+        script.setScriptText(lua);
+        script.setResultType(Long.class);
+        return script;
+    }
 }
