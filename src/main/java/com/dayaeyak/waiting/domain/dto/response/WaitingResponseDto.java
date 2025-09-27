@@ -14,7 +14,7 @@ public record WaitingResponseDto(
         Long userId,
         Integer userCount,
         WaitingStatus waitingStatus,
-        String entry_time
+        String closed_time
         ) {
 
     public static WaitingResponseDto from(Waiting waiting){
@@ -25,7 +25,7 @@ public record WaitingResponseDto(
         .userId(waiting.getUserId())
         .userCount(waiting.getUserCount())
         .waitingStatus(waiting.getWaitingStatus())
-        .entry_time(waiting.getEntryTime())
+        .closed_time(waiting.getClosedTime())
         .build();
         }
 
