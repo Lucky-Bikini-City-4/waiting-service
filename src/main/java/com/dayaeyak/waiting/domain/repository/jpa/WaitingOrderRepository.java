@@ -22,9 +22,4 @@ public interface WaitingOrderRepository extends JpaRepository<WaitingOrder, Long
 
 }
 
-//public interface WaitingOrderRepository extends CrudRepository<WaitingOrder, Long> {
-//
-// TODO
-//}
-
 
