@@ -12,7 +12,7 @@ public enum WaitingStatus {
     ENTERED,  // 유저 입장됨
 
     WAITING, // 유저 대기 (호출전)
-    COMMITING, // 유저 가는중 (호출후)
+    COMMING, // 유저 가는중 (호출후)
     ARRIVED, // 유저 도착 (호출후)
     NO_ANSWER,  // 유저 무응답1
     FIRST_CALLED, // 호출 후 응답 대기 (호출후)
