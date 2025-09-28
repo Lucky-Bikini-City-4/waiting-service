@@ -85,7 +85,6 @@ public class WaitingCacheRepository {
 
         System.out.println(k1+" "+ k2+" " +member+" " +cmd+" " +status+" " +expireAt+" ");
 
-
         redis.execute(
                 waitingStateScript,                 // new DefaultRedisScript<>(lua, Long.class)
                 List.of(k1, k2),                    // KEYS -> String 리스트
@@ -143,4 +142,51 @@ public class WaitingCacheRepository {
     public void setDetailTtlUntil(long restaurantId, long waitingId, long expireAtEpochMs) {
         redis.expireAt(kWaiting(restaurantId, waitingId), new Date(expireAtEpochMs).toInstant());
     }
+
+    // 레디스 지연 큐 등록 메서드
+    public void enqueueDeadline(long waitingId, String transition, long deadlineAtEpochMs) {
+        String member = waitingId + "#" + transition; // ZSET 멤버
+        redis.opsForZSet().add(kDeadlineZset(), member, (double) deadlineAtEpochMs);
+    }
+
+    private String kId2Restaurant() { return "waiting:id2restaurant"; }
+    public void mapWaitingToRestaurant(long waitingId, long restaurantId) {
+        redis.opsForHash().put(kId2Restaurant(), String.valueOf(waitingId), String.valueOf(restaurantId));
+    }
+
+    public void unmapWaiting(long waitingId) {
+        redis.opsForHash().delete(kId2Restaurant(), String.valueOf(waitingId));
+    }
+
+    public Long getRestaurantByWaitingId(long waitingId) {
+        Object v = redis.opsForHash().get(kId2Restaurant(), String.valueOf(waitingId));
+        return v == null ? null : Long.valueOf(String.valueOf(v));
+    }
+
+    // 상태별 인덱스 조작을 컨슈머에서 호출할 수 있게 public 헬퍼로
+    public void addByStatus(long restaurantId, long waitingId, String status) {
+        redis.opsForZSet().add(kByStatus(restaurantId, status),
+                String.valueOf(waitingId), (double) System.currentTimeMillis());
+    }
+    public void removeFromByStatus(long restaurantId, long waitingId, String status) {
+        redis.opsForZSet().remove(kByStatus(restaurantId, status), String.valueOf(waitingId));
+    }
+
+    // 1) 지연 큐(ZSET): deadlineAt(에폭 ms)로 인덱싱 → 컨슈머가 만료분만 뽑음
+    private String kDeadlineZset() { return "waiting:deadline:zset"; }  // 전역 단일 키
+
+    // 2) 처리 락(STRING): 중복 처리 방지용 SETNX EX
+    private String kLock(long waitingId) { return "waiting:" + waitingId + ":lock"; }
+
+    // 3) 상태별 인덱스(옵션, 사장 화면 최적화용)
+    private String kByStatus(long restaurantId, String status) { return "{restaurantId:" + restaurantId + "}:byStatus:" + status; }
+
+    // 4) 사용자별 현재 대기(옵션, ‘내 대기 목록’ 빠른 조회)
+    private String kUserActive(long userId) { return "{userId:" + userId + "}:active_waitings"; }
+
+    // 5) 이벤트/알림 연동(옵션)
+    private String kEventsStream() { return "waiting:events:stream"; }
+
+    // 6) 실패 재처리용 DLQ(옵션)
+    private String kDlq() { return "waiting:dlq:list"; }
 }
