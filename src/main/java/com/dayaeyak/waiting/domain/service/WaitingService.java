@@ -69,13 +69,13 @@ public class WaitingService {
         Long savedWaitingId = savedWaiting.getWaitingId();
 
 //        postgreSQL DB에 넣는 코드
-        WaitingOrder waitingOrder = WaitingOrder.builder()
-                .waitingId(waiting.getWaitingId())
-                .restaurantId(waiting.getRestaurantId())
-                .waitingStatus(waiting.getWaitingStatus())
-                .build();
-        waitingOrderRepository.save(waitingOrder);
-        WaitingOrder savedWaitingOrder = waitingOrderRepository.findByWaitingIdAndDeletedAtIsNull(savedWaiting.getWaitingId());
+//        WaitingOrder waitingOrder = WaitingOrder.builder()
+//                .waitingId(waiting.getWaitingId())
+//                .restaurantId(waiting.getRestaurantId())
+//                .waitingStatus(waiting.getWaitingStatus())
+//                .build();
+//        waitingOrderRepository.save(waitingOrder);
+//        WaitingOrder savedWaitingOrder = waitingOrderRepository.findByWaitingIdAndDeletedAtIsNull(savedWaiting.getWaitingId());
 
         long restaurantId = waiting.getRestaurantId();
         long waitingId = waiting.getWaitingId();
