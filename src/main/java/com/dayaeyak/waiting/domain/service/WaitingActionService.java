@@ -7,6 +7,13 @@ import com.dayaeyak.waiting.domain.enums.CancelType;
 import com.dayaeyak.waiting.domain.enums.Transition;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
 import com.dayaeyak.waiting.domain.entity.WaitingOrder;
+import com.dayaeyak.waiting.domain.kafka.dto.CustomerFromSellerCancelDto;
+import com.dayaeyak.waiting.domain.kafka.dto.CustomerFromSellerDto;
+import com.dayaeyak.waiting.domain.kafka.dto.SellerDto;
+import com.dayaeyak.waiting.domain.kafka.enums.FromSellerType;
+import com.dayaeyak.waiting.domain.kafka.enums.SellerAlarmType;
+import com.dayaeyak.waiting.domain.kafka.enums.ServiceType;
+import com.dayaeyak.waiting.domain.kafka.service.AlarmService;
 import com.dayaeyak.waiting.domain.repository.cache.redis.WaitingCacheRepository;
 import com.dayaeyak.waiting.domain.repository.jpa.WaitingOrderRepository;
 import com.dayaeyak.waiting.domain.repository.jpa.WaitingRepository;
@@ -17,6 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 
+import java.sql.Time;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.HashMap;
@@ -33,6 +43,7 @@ public class WaitingActionService {
     private final WaitingOrderRepository waitingOrderRepository;
     private final WaitingCacheRepository waitingCache;
     private final WaitingSeqDailyRepository waitingSeqDailyRepository;
+    private final AlarmService alarmService;
 
 
     // TODO 노쇼 처리 - 고도화때 작업 처리반 쪽으로 넘기기
@@ -64,12 +75,19 @@ public class WaitingActionService {
 //                waitingOrder.setWaitingStatus(WaitingStatus.FIRST_CALLED);
 
                 long deadline = System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(10);
-
+                LocalDateTime deadlineLdt =
+                        Instant.ofEpochMilli(deadline).atZone(ZoneId.systemDefault()).toLocalDateTime();
                 // Redis
                 wo.put("status", WaitingStatus.FIRST_CALLED);
                 wo.put("deadlineAt", deadline);
 
-                // TODO 알람한테 요청
+                // 사장 호출1
+                CustomerFromSellerDto customerFromSellerDto = new CustomerFromSellerDto(
+                        0L, ServiceType.WAITING, waitingId, FromSellerType.FIRST, "이다예", deadlineLdt);
+
+                alarmService.sendMessageQueue2("waiting-seller", "", customerFromSellerDto);
+
+
                 // 지연 큐에 등록(전역 키 사용)
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
                 waitingCache.mapWaitingToRestaurant(waitingId, restaurantId);
@@ -85,7 +103,17 @@ public class WaitingActionService {
                 // Redis
                 wo.put("status", WaitingStatus.FINAL_CALLED);
                 wo.put("deadlineAt", deadline);
-                // TODO 알람한테 요청
+
+                LocalDateTime deadlineLdt =
+                        Instant.ofEpochMilli(deadline).atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+                // 사장 호출1
+                CustomerFromSellerDto customerFromSellerDto = new CustomerFromSellerDto(
+                        0L, ServiceType.WAITING, waitingId, FromSellerType.LAST, "이다예", deadlineLdt);
+
+                alarmService.sendMessageQueue2("waiting-seller", "", customerFromSellerDto);
+
+
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
                 waitingCache.mapWaitingToRestaurant(waitingId, restaurantId);
                 waitingCache.enqueueDeadline(waitingId, Transition.NO_ANSWER2.name(), deadline);
@@ -126,7 +154,12 @@ public class WaitingActionService {
         wo.put("status", WaitingStatus.COMMING);
         wo.put("deadlineAt", System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(moveTime));
 
-        // TODO 알람한테 요청
+        // TODO 알람: 호출 응답시 시간 입력 필요
+        SellerDto sellerDto = new SellerDto(
+                0L, ServiceType.WAITING, waitingId, SellerAlarmType.CUSTOMER_REPLIED, "이다예");
+
+        alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
+
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
         waitingCache.mapWaitingToRestaurant(waitingId, restaurantId);
         waitingCache.enqueueDeadline(waitingId, Transition.NO_ANSWER.name(), deadline);
@@ -157,7 +190,12 @@ public class WaitingActionService {
         wo.put("status", WaitingStatus.ARRIVED);
         wo.put("deadlineAt",0L);
 
-        // TODO 알람한테 요청
+        // TODO 알람: 손님 도착
+        SellerDto sellerDto = new SellerDto(
+                0L, ServiceType.WAITING, waitingId, SellerAlarmType.CUSTOMER_ARRIVED, "이다예");
+
+        alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
+
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
         // TODO 배포전에 외국 시간으로 바꾸기
@@ -190,7 +228,13 @@ public class WaitingActionService {
                 waiting.setWaitingStatus(WaitingStatus.OWNER_CANCEL);
                 waiting.setClosedTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
-                // TODO 알람한테 요청
+                // TODO 알람: 사장 취소
+                CustomerFromSellerCancelDto customerFromSellerCancelDto = new CustomerFromSellerCancelDto(
+                        0L, ServiceType.WAITING, waitingId);
+
+                alarmService.sendMessageQueue1("waiting-seller", "", customerFromSellerCancelDto);
+
+
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
                 waitingCache.deactivateImmediate(restaurantId, waitingId);
@@ -200,7 +244,11 @@ public class WaitingActionService {
                 waiting.setWaitingStatus(WaitingStatus.CANCEL);
                 waiting.setClosedTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
-                // TODO 알람한테 요청
+                // TODO 알람: 손님 취소
+                SellerDto sellerDto = new SellerDto(
+                        0L, ServiceType.WAITING, waitingId, SellerAlarmType.WAITING_CANCELED, "이다예");
+                alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
+
                 // TODO 고도화때 작업 처리반 쪽으로 넘기기
 
                 waitingCache.deactivateImmediate(restaurantId, waitingId);
@@ -230,9 +278,7 @@ public class WaitingActionService {
         waiting.setClosedTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
         waitingCache.deactivateImmediate(restaurantId, waitingId);
 
-        // TODO 알람한테 요청
         // TODO 고도화때 작업 처리반 쪽으로 넘기기
-
 //        waitingOrderRepository.save(waitingOrder);
         waitingCache.unmapWaiting(waitingId);
         return new WaitingUpdateResponseDto(waitingId, WaitingStatus.ENTERED);

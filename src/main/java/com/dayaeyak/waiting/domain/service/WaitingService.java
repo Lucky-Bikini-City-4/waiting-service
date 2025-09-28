@@ -10,6 +10,11 @@ import com.dayaeyak.waiting.domain.entity.WaitingSeqDaily;
 import com.dayaeyak.waiting.domain.entity.WaitingSeqDailyId;
 import com.dayaeyak.waiting.domain.enums.WaitingStatus;
 import com.dayaeyak.waiting.domain.entity.WaitingOrder;
+import com.dayaeyak.waiting.domain.kafka.dto.CustomerWaitingDto;
+import com.dayaeyak.waiting.domain.kafka.dto.SellerDto;
+import com.dayaeyak.waiting.domain.kafka.enums.SellerAlarmType;
+import com.dayaeyak.waiting.domain.kafka.enums.ServiceType;
+import com.dayaeyak.waiting.domain.kafka.service.AlarmService;
 import com.dayaeyak.waiting.domain.repository.cache.redis.WaitingCacheRepository;
 import com.dayaeyak.waiting.domain.repository.jpa.WaitingOrderRepository;
 import com.dayaeyak.waiting.domain.repository.jpa.WaitingRepository;
@@ -25,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +47,7 @@ public class WaitingService {
     private final WaitingRepository waitingRepository;
     private final WaitingCacheRepository waitingCache;
     private final WaitingSeqDailyRepository waitingSeqDailyRepository;
+    private final AlarmService alarmService;
 
     public WaitingCreateResponseDto register(WaitingCreateRequestDto requestDto){
 
@@ -91,7 +99,21 @@ public class WaitingService {
 
         waitingCache.activate(restaurantId, waitingId, seq, status);
 
-        // Todo:사장에게 등록되었다는 알람 보내야함
+        long userId = requestDto.getUserId();
+        long userCount = requestDto.getUserCount();
+
+
+        SellerDto sellerDto = new SellerDto(userId, ServiceType.WAITING, waitingId, SellerAlarmType.NEW_WAITING, "이다예");
+
+        // 사장에게 등록되었다는 알람
+        alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
+
+
+        LocalDateTime now = LocalDateTime.now();
+        // 타입 바꿔달라 하기
+//        CustomerWaitingDto customerWaitingDto = new CustomerWaitingDto(userId, ServiceType.WAITING, waitingId, "이다예", userCount, now, seq)
+        // 손님에게 등록되었다는 알람
+//        alarmService.sendMessageQueue3("waiting-seller", "", customerWaitingDto);
 
         return new WaitingCreateResponseDto(savedWaitingId);
     }
