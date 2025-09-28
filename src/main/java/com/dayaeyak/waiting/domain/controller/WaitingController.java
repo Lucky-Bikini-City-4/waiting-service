@@ -41,7 +41,7 @@ public class WaitingController {
         return ApiResponse.success(200, "웨이팅 단건이 조회되었습니다. ", responseDto);
     }
 
-    // 가게별 웨이팅 목록 조회
+    // 가게별 전체 웨이팅 목록 조회
     @GetMapping
     public ResponseEntity<ApiResponse<WaitingListResponseDto>> getWaitings(
             @RequestParam Long restaurantId,
@@ -52,12 +52,13 @@ public class WaitingController {
     }
 
     // 웨이팅 수정 액션 통합형
-    @PostMapping("/{waitingId}/actions/{action}")
+    @PostMapping("/{restaurantId}/{waitingId}/actions/{action}")
     public ResponseEntity<ApiResponse<WaitingUpdateResponseDto>> updateAction(
+            @PathVariable Long restaurantId,
             @PathVariable Long waitingId,
             @PathVariable String action,
             @RequestBody(required = false) Map<String, Object> payload) {
-        WaitingUpdateResponseDto responseDto = waitingActionService.updateWaiting(waitingId, action, payload);
+        WaitingUpdateResponseDto responseDto = waitingActionService.updateWaiting(restaurantId, waitingId, action, payload);
 
         return ApiResponse.success(202, "웨이팅이 수정되었습니다.", responseDto);
     }
@@ -72,7 +73,7 @@ public class WaitingController {
         return ApiResponse.success(204, "웨이팅이 삭제되었습니다.", null);
     }
 
-    // 웨이팅 모든 음식점에서 전체 삭제
+    // 웨이팅 모든 음식점에서 음식점 단위 전체 삭제
     @DeleteMapping("/all/{restaurantId}")
     public ResponseEntity<ApiResponse<Void>> deleteWaitingAll(
             @Validated
@@ -82,11 +83,12 @@ public class WaitingController {
     }
 
     // 웨이팅 id로 대기 순번 조회
-    @GetMapping("/order/{waitingId}")
+    @GetMapping("/order/{restaurantId}/{waitingId}")
     public ResponseEntity<ApiResponse<WaitingOrderResponseDto>> getWaitingOrder(
             @Validated
+            @PathVariable Long restaurantId,
             @PathVariable Long waitingId){
-        WaitingOrderResponseDto responseDto = waitingService.getWaitingOrder(waitingId);
+        WaitingOrderResponseDto responseDto = waitingService.getWaitingOrder(restaurantId, waitingId);
         return ApiResponse.success(200, "웨이팅 순번이 조회되었습니다.", responseDto);
     }
 }

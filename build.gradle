@@ -32,6 +32,8 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis:3.2.6'
+    implementation 'io.lettuce:lettuce-core' // 기본
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
 	// PostgreSQL
 	runtimeOnly 'org.postgresql:postgresql'
