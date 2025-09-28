@@ -52,36 +52,3 @@ public class WaitingOrder extends BaseEntity {
         this.deadline = null;
     }
 }
-
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@RedisHash("waiting")
-//public class WaitingOrder implements Serializable {
-//
-//    @Id
-//    private Long waitingId;
-//    private Long restaurantId;
-//    private WaitingStatus waitingStatus;
-//    private String initialTime;
-//    private String deadline;
-//    private String lastCallAt;
-//
-//    @Builder
-//    public WaitingOrder(
-//            Long waitingId,
-//            Long restaurantId,
-//            WaitingStatus waitingStatus,
-//            String initialTime,
-//            String deadline,
-//            String lastCallAt
-//
-//    ) {
-//        this.waitingId = waitingId;
-//        this.restaurantId = restaurantId;
-//        this.waitingStatus = waitingStatus;
-//        this.initialTime = initialTime;
-//        this.deadline = null;
-//        this.lastCallAt = null;
-//    }
-//}
