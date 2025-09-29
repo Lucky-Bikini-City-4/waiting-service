@@ -12,6 +12,7 @@ import com.dayaeyak.waiting.domain.enums.WaitingStatus;
 import com.dayaeyak.waiting.domain.entity.WaitingOrder;
 import com.dayaeyak.waiting.domain.kafka.dto.CustomerWaitingDto;
 import com.dayaeyak.waiting.domain.kafka.dto.SellerDto;
+import com.dayaeyak.waiting.domain.kafka.enums.CustomerWaitingType;
 import com.dayaeyak.waiting.domain.kafka.enums.SellerAlarmType;
 import com.dayaeyak.waiting.domain.kafka.enums.ServiceType;
 import com.dayaeyak.waiting.domain.kafka.service.AlarmService;
@@ -108,12 +109,11 @@ public class WaitingService {
         // 사장에게 등록되었다는 알람
         alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
 
-
         LocalDateTime now = LocalDateTime.now();
-        // 타입 바꿔달라 하기
-//        CustomerWaitingDto customerWaitingDto = new CustomerWaitingDto(userId, ServiceType.WAITING, waitingId, "이다예", userCount, now, seq)
-        // 손님에게 등록되었다는 알람
-//        alarmService.sendMessageQueue3("waiting-seller", "", customerWaitingDto);
+        CustomerWaitingDto customerWaitingDto = new CustomerWaitingDto(
+                userId, ServiceType.WAITING, waitingId, CustomerWaitingType.PUT, "이다예", userCount, now, seq);
+//         손님에게 등록되었다는 알람
+        alarmService.sendMessageQueue3("waiting-seller", "", customerWaitingDto);
 
         return new WaitingCreateResponseDto(savedWaitingId);
     }
@@ -181,9 +181,7 @@ public class WaitingService {
 //                        WaitingStatus.ENTERED, WaitingStatus.NO_ANSWER2)
 //        );
 
-
         long seq = waitingCache.currentOrder(restaurantId, waitingId);
-
 
         return new WaitingOrderResponseDto(seq, waitingId);
     }
