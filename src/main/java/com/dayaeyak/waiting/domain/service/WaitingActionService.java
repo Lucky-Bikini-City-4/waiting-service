@@ -154,7 +154,7 @@ public class WaitingActionService {
         wo.put("status", WaitingStatus.COMMING);
         wo.put("deadlineAt", System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(moveTime));
 
-        // TODO 알람: 호출 응답시 시간 입력 필요
+        // TODO 알람: 호출 응답시 시간 입력 필요 -> 고도화때 하기로 함
         SellerDto sellerDto = new SellerDto(
                 0L, ServiceType.WAITING, waitingId, SellerAlarmType.CUSTOMER_REPLIED, "이다예");
 
@@ -190,7 +190,7 @@ public class WaitingActionService {
         wo.put("status", WaitingStatus.ARRIVED);
         wo.put("deadlineAt",0L);
 
-        // TODO 알람: 손님 도착
+        // 알람: 손님 도착
         SellerDto sellerDto = new SellerDto(
                 0L, ServiceType.WAITING, waitingId, SellerAlarmType.CUSTOMER_ARRIVED, "이다예");
 
@@ -228,7 +228,7 @@ public class WaitingActionService {
                 waiting.setWaitingStatus(WaitingStatus.OWNER_CANCEL);
                 waiting.setClosedTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
-                // TODO 알람: 사장 취소
+                // 알람: 사장 취소
                 CustomerFromSellerCancelDto customerFromSellerCancelDto = new CustomerFromSellerCancelDto(
                         0L, ServiceType.WAITING, waitingId);
 
@@ -244,7 +244,7 @@ public class WaitingActionService {
                 waiting.setWaitingStatus(WaitingStatus.CANCEL);
                 waiting.setClosedTime(OffsetDateTime.now(ZoneId.of("Asia/Seoul")).toString());
 
-                // TODO 알람: 손님 취소
+                // 알람: 손님 취소
                 SellerDto sellerDto = new SellerDto(
                         0L, ServiceType.WAITING, waitingId, SellerAlarmType.WAITING_CANCELED, "이다예");
                 alarmService.sendMessageQueue4("waiting-seller", "", sellerDto);
