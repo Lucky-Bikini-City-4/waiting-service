@@ -5,6 +5,7 @@
   <p> 📅 MSA 기반 멀티 컨텐츠 통합 예매 서비스 📅</p>
 </div>
 
+<img width="693" height="380" alt="대표이미지" src="https://github.com/user-attachments/assets/950d9a4c-bfca-401c-8fbe-b1ae07cf13b4" />
 
 
 <br/>
@@ -33,7 +34,6 @@
 <br />
 
 ## <span id="1">🚩 1. 프로젝트 소개 : MSA 기반 멀티 컨텐츠 통합 예매 서비스 </span>
-<img width="693" height="380" alt="대표이미지" src="https://github.com/user-attachments/assets/950d9a4c-bfca-401c-8fbe-b1ae07cf13b4" />
 
 
 ### 프로젝트 개발 기간:  25.09.01 ~ 25.10.03
