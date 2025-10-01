@@ -33,6 +33,7 @@
 <br />
 
 ## <span id="1">🚩 1. 프로젝트 소개 : MSA 기반 멀티 컨텐츠 통합 예매 서비스 </span>
+<img width="693" height="380" alt="대표이미지" src="https://github.com/user-attachments/assets/950d9a4c-bfca-401c-8fbe-b1ae07cf13b4" />
 
 
 ### 프로젝트 개발 기간:  25.09.01 ~ 25.10.03
@@ -186,6 +187,7 @@ Java 17, Spring Framework(JPA, EUREKA), PostgreSQL, Redis, Kafka AWS EC2
 
 
 ## <span id="5">⚙️ 5. 아키텍처 설계</span>
+<img width="986" height="386" alt="웨이팅 스트럭쳐 설계" src="https://github.com/user-attachments/assets/abece139-386b-4efe-999d-b23e1240c313" />
 
 
 <br>
@@ -194,6 +196,7 @@ Java 17, Spring Framework(JPA, EUREKA), PostgreSQL, Redis, Kafka AWS EC2
 
 ## <span id="6">💻 6. ERD 설계</span>
 
+<img width="1240" height="424" alt="waiting ERD" src="https://github.com/user-attachments/assets/83b7256a-7aa7-41f2-8fbe-934e78461eb0" />
 
 <br>
 
