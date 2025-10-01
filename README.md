@@ -245,7 +245,7 @@ Java 17, Spring Framework(JPA, EUREKA), PostgreSQL, Redis, Kafka AWS EC2
 
 ⇒ 최악의 상황 테스트 (6인 동접 - Concurrency Thread Group)
 
-![스크린샷 2025-09-25 오후 9.25.11.png](attachment:f5766847-5503-472f-94f7-9aea0c6a2b52:스크린샷_2025-09-25_오후_9.25.11.png)
+<img width="638" height="691" alt="스크린샷_2025-09-25_오후_9 25 11" src="https://github.com/user-attachments/assets/04064911-8ffa-450d-9fe3-bff0013edb95" />
 
 - 사전 준비
     - 5명을 미리 웨이팅 등록하여 웨이팅 ID 발급
@@ -255,6 +255,10 @@ Java 17, Spring Framework(JPA, EUREKA), PostgreSQL, Redis, Kafka AWS EC2
     - 에러율 43.67%
     - 처리량 866.5/sec
     - 성능 개선이 필요함 ⇒ 고도화 단계에서 자주 조회되는 정보를 Redis로 캐싱하여 성능을 개선함
+ 
+<img width="1160" height="326" alt="스크린샷_2025-09-25_오후_9 27 22" src="https://github.com/user-attachments/assets/a5da843b-1eb5-4412-bc20-e8373850d81b" />
+
+
 </aside>
 
 <br>
