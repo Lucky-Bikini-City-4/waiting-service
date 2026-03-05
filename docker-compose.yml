@@ -1,0 +1,64 @@
+services:
+  # 1. 내가 만든 웨이팅 서비스
+  waiting-service:
+    image: waiting
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:29092
+      - SPRING_DATA_REDIS_HOST=redis  # 중요: 로컬호스트가 아니라 도커 서비스명인 'redis'로 연결
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/test_db
+      - SPRING_DATASOURCE_USERNAME=dayaelee
+    depends_on:
+      - kafka
+      - redis
+      - db
+
+    # 1. PostgreSQL (application.yml의 datasource용)
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=test_db      # url의 /test_db 와 일치
+      - POSTGRES_USER=dayaelee   # username과 일치
+      - POSTGRES_HOST_AUTH_METHOD=trust # 로컬 테스트용 (비번 없이 접속)
+
+  # 2. 레디스 추가
+  redis:
+    image: redis:alpine
+    container_name: redis-container
+    ports:
+      - "6379:6379"
+
+  # 3. Zookeeper: Kafka의 관리자
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # 4. 카프카 (기존 설정 유지)
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      # 이 아래 3줄이 핵심입니다!
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://kafka:29092,OUTSIDE://localhost:9093
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:29092,OUTSIDE://0.0.0.0:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      # 최신 이미지에서 에러를 방지하기 위한 추가 필수값
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_ENABLE_KRAFT: "false"
+      # (선택) 일부 버전에서 필요한 주키퍼 모드 강제 설정
+      CLUSTER_ID: "MkU3OEVBNTcwNTJENDM2Qk"
